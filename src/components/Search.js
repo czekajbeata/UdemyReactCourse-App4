@@ -5,8 +5,6 @@ const Search = () => {
   const [term, setTerm] = useState("programming");
   const [results, setResults] = useState([]);
 
-  console.log(results);
-
   useEffect(() => {
     const searchWiki = async () => {
       const { data } = await axios.get("https://en.wikipedia.org/w/api.php", {
@@ -20,8 +18,19 @@ const Search = () => {
       });
       setResults(data.query.search);
     };
-    if (term) {
+
+    if (term && !results.length) {
       searchWiki();
+    } else {
+      const timeoutId = setTimeout(() => {
+        if (term) {
+          searchWiki();
+        }
+      }, 500);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
   }, [term]);
 
